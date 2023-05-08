@@ -2,7 +2,7 @@ import openpyxl
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 
-grat_care_url = 'https://www.iwantgreatcare.org/search'
+great_care_url = 'https://www.iwantgreatcare.org/search'
 allowed_extractor = ['/doctors/', '/optometrists/', '/nurses/', '/dentists/', '/physiotherapists/', '/dietitians/', '/occupationaltherapists/']
 title_xpath = '//*[@id="entity-name-score-container"]/h1'
 specialises_xpathes = ['//*[@id="specialies-container"]/div/ul', '//*[@id="information"]/div[2]/div[2]/div/ul', 
@@ -18,7 +18,7 @@ file_index = 2
 class GreatCareSpider(CrawlSpider):
     name = 'greatcarespider'
     allowed_domains = ['iwantgreatcare.org']
-    start_urls = [grat_care_url]
+    start_urls = [great_care_url]
 
     rules = (
         # Extract and follow all links!
