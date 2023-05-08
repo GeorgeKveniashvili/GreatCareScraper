@@ -5,10 +5,9 @@ from scrapy.linkextractors import LinkExtractor
 grat_care_url = 'https://www.iwantgreatcare.org/search'
 allowed_extractor = ['/doctors/', '/optometrists/', '/nurses/', '/dentists/', '/physiotherapists/', '/dietitians/', '/occupationaltherapists/']
 title_xpath = '//*[@id="entity-name-score-container"]/h1'
-specialises_xpath = '//*[@id="specialies-container"]/div/ul'
-#//*[@id="information"]/div[2]/div[2]/div/ul
-
-works_xpaths = ['//*[@id="works-at-container"]/div/ul', '/html/body/div[1]/main/div/span/div[2]/div/div[2]/div[1]/ul',
+specialises_xpathes = ['//*[@id="specialies-container"]/div/ul', '//*[@id="information"]/div[2]/div[2]/div/ul', 
+                       '//*[@id="information"]/div[1]/div[2]/div/ul']
+works_xpathes = ['//*[@id="works-at-container"]/div/ul', '/html/body/div[1]/main/div/span/div[2]/div/div[2]/div[1]/ul',
                 '//*[@id="information"]/div[2]/div[1]/div/ul', '//*[@id="information"]/div[1]/div[1]/div/ul']
 postcode_xpath = 'sss'
 file_path = "test101.xlsx"
@@ -32,30 +31,28 @@ class GreatCareSpider(CrawlSpider):
             name = full_name_formated[0]
             surname = full_name_formated[1]
 
-            specialises_selector = response.xpath(specialises_xpath)
-            specialises_list = specialises_selector.css('li::text').getall()
-            specialises = ""
-            for item in specialises_list:
-                specialises += str(item)
+            specialises = extract_multiple_selectors(response, specialises_xpathes, 'li::text', surname)
             
             profile = "Empty"
 
-            works = extract_works(response)
+            works = extract_multiple_selectors(response, works_xpathes, 'a::text', surname)
 
             write_file(file_index, name, surname, specialises, profile, works, postcode_xpath, response.url)
             file_index += 1
         self.log('crawling'.format(response.url))
 
-def extract_works(response):
-    for works_xpath in works_xpaths:
-        works_selector = response.xpath(works_xpath)
-        if works_selector is None:
-            continue
-        works_list = works_selector.css('a::text').getall()
-    works = ""
-    for item in works_list:
-        works += str(item)
-    return works
+def extract_multiple_selectors(response, xpathes, text_selector, name):
+    for xpath in xpathes:
+        selector = response.xpath(xpath)
+        text_list = selector.css(text_selector).getall()
+        if len(text_list) > 0:
+            print("The selector is good: "+ str(selector)+"name: "+name)
+            break
+        print("The selector is None: "+ str(selector)+"name: "+name)
+    text = ""
+    for item in text_list:
+        text += str(item)
+    return text
 
 
 def write_file(index, name, surname, specialises, profile, works, postcode, domain):
