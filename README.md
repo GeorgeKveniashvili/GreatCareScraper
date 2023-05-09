@@ -8,6 +8,7 @@ The script scrapes medical workers data from https://www.iwantgreatcare.org/sear
 - Works at
 - Profile URL
 
+---
 
 Requirements:
 - Python version 3 and up
